@@ -1,0 +1,224 @@
+openapi: 3.0.3
+info:
+  title: Personal Task Tracker API
+  description: A simple API to manage personal tasks or to-do lists.
+  version: 1.0.0
+  contact:
+    name: jrs5
+servers:
+  - url: https://localhost:8000/docs
+    description: Local development server
+
+paths:
+  /tasks:
+    get:
+      summary: Retrieve all tasks
+      description: Fetch all tasks. Optionally, filter by completion status.
+      parameters:
+        - in: query
+          name: completed
+          description: Filter tasks by completion status
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: A list of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+        "500":
+          description: Internal server error
+
+    post:
+      summary: Create a new task
+      description: Create a new task with a title, description, due date, and completion status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskCreate"
+      responses:
+        "201":
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: Bad request (e.g., missing required fields)
+        "500":
+          description: Internal server error
+
+  /tasks/{id}:
+    get:
+      summary: Get a specific task by ID
+      description: Retrieve details of a specific task by its unique ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the task to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Task not found
+        "500":
+          description: Internal server error
+
+    put:
+      summary: Update an existing task
+      description: Update task details, such as marking it as completed or modifying its due date.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the task to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: Invalid input
+        "404":
+          description: Task not found
+        "500":
+          description: Internal server error
+
+    delete:
+      summary: Delete a specific task
+      description: Delete a task by its unique ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the task to delete
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Task deleted successfully
+        "404":
+          description: Task not found
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    Task:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - dueDate
+        - completed
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the task
+        title:
+          type: string
+          description: The title of the task
+        description:
+          type: string
+          description: A detailed description of the task
+        dueDate:
+          type: string
+          format: date-time
+          description: The due date for the task
+        completed:
+          type: boolean
+          description: Whether the task is completed or not
+        priority:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+          description: The priority level of the task
+
+    TaskCreate:
+      type: object
+      required:
+        - title
+        - description
+        - dueDate
+      properties:
+        title:
+          type: string
+          description: The title of the task
+        description:
+          type: string
+          description: A detailed description of the task
+        dueDate:
+          type: string
+          format: date-time
+          description: The due date for the task
+        priority:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+          description: The priority level of the task
+        completed:
+          type: boolean
+          description: Whether the task is completed (defaults to false)
+          default: false
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the task
+        description:
+          type: string
+          description: A detailed description of the task
+        dueDate:
+          type: string
+          format: date-time
+          description: The due date for the task
+        completed:
+          type: boolean
+          description: Whether the task is completed
+        priority:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+          description: The priority level of the task
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A description of the error
+        code:
+          type: integer
+          description: The HTTP status code
