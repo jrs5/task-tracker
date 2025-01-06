@@ -1,0 +1,52 @@
+name: "Python Checks"
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  python-checks:
+    name: "Python Checks"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - name: "Setup Python"
+        id: "setup"
+        uses: "actions/setup-python@v5"
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: "Create Poetry venv"
+        shell: "bash"
+        working-directory: "."
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+
+      - name: "Poetry Install"
+        shell: "bash"
+        working-directory: "."
+        run: |
+          pip install poetry
+          poetry install
+
+      - name: "Ruff Check"
+        shell: "bash"
+        working-directory: "."
+        run: |
+          poetry run ruff format --check .
+          poetry run ruff check .
+
+      - name: "MyPy"
+        shell: "bash"
+        working-directory: "."
+        run: |
+          poetry run dmypy run -- .
+
+      - name: "Run Tests"
+        shell: "bash"
+        working-directory: "."
+        run: |
+          poetry run coverage run -m pytest
+          poetry run coverage report
