@@ -216,3 +216,5 @@ terraform.rc
 # Ignore IDE files
 .idea/
 .vscode/
+
+.codegpt
