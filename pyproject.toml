@@ -19,7 +19,6 @@ aws-lambda-powertools = "3.4.0"
 httpx = "0.28.1"
 fastapi = "0.115.6"
 mangum = "0.19.0"
-pendulum = "3.0.0"
 pydantic = "2.10.4"
 pydantic-settings = "2.7.1"
 python-dotenv = "1.0.1"
@@ -28,6 +27,8 @@ typing-extensions = "4.12.2"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "7.6.10"
+aws-cdk-lib = "2.174.0"
+constructs = "^10.0.0"
 datamodel-code-generator = "0.26.4"
 mypy = "1.14.1"
 pytest = "8.3.4"
@@ -66,7 +67,7 @@ fail_under = 80
 check_untyped_defs = true
 disallow_any_unimported = true
 disallow_untyped_defs = true
-exclude = ["venv/", ".venv/"]
+exclude = ["venv/", ".venv/", "dist/", "cdk/cdk.out/"]
 explicit_package_bases = true
 ignore_missing_imports = true
 mypy_path = "src"
@@ -84,6 +85,7 @@ warn_required_dynamic_aliases = true
 warn_untyped_fields = true
 
 [tool.pyright]
+reportArgumentType = false
 reportCallIssue = false
 
 [tool.pytest.ini_options]
