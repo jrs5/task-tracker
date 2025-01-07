@@ -218,3 +218,8 @@ terraform.rc
 .vscode/
 
 .codegpt
+
+# CDK asset staging directory
+**/.cdk.staging
+**/cdk.out
+**/cdk/package.zip
