@@ -50,8 +50,16 @@ all-dev: format ruff mypy test
 
 ### Unit Tests
 .PHONY: test
-test:
-	poetry run coverage run -m pytest
+test: test-app test-cdk
+
+.PHONY: test-app
+test-app:
+	poetry run coverage run -m pytest tests
+	poetry run coverage report
+
+.PHONY: test-cdk
+test-cdk: package
+	poetry run coverage run -m pytest cdk/tests
 	poetry run coverage report
 
 .PHONY: show-outdated
@@ -65,3 +73,15 @@ ensure-poetry:
 .PHONY: run
 run: ensure-poetry
 	cd src && poetry run python -m run
+
+# Package
+.PHONY: package
+package: ensure-poetry
+	pip --version
+	mkdir -p build
+	poetry export --directory=. --format requirements.txt --without-hashes --output=build/requirements.txt
+	pip install --target=dist -r build/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all:
+
+	cp -rf src/* dist/
+	cd dist && zip -r package.zip .
+	mv dist/package.zip cdk/package.zip
