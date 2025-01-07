@@ -48,5 +48,13 @@ jobs:
         shell: "bash"
         working-directory: "."
         run: |
-          poetry run coverage run -m pytest
+          poetry run coverage run -m pytest tests
+          poetry run coverage report
+
+      - name: "Run Tests for CDK"
+        shell: "bash"
+        working-directory: "."
+        run: |
+          touch cdk/package.zip
+          poetry run coverage run -m pytest cdk/tests
           poetry run coverage report
