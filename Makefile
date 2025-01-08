@@ -46,11 +46,14 @@ check: ruff mypy
 
 # Run all for dev
 .PHONY: all-dev
-all-dev: format ruff mypy test
+all-dev: format ruff mypy test-app
+
+.PHONY: all-dev-plus-cdk
+all-dev-plus-cdk: format ruff mypy test-all
 
 ### Unit Tests
-.PHONY: test
-test: test-app test-cdk
+.PHONY: test-all
+test-all: test-app test-cdk
 
 .PHONY: test-app
 test-app:
