@@ -40,3 +40,26 @@ def store_task(task: spec.Task, table: str, region: str) -> bool:
         },
     )
     return response["ResponseMetadata"]["HTTPStatusCode"] == 200
+
+
+def get_tasks(table: str, region: str) -> list[spec.Task]:
+    """Get all tasks from DynamoDB
+
+    Args:
+        table (str): DynamoDB table name
+        region (str): AWS Region
+
+    Returns:
+        list[spec.Task]: A list of tasks
+    """
+    dynamodb = boto3.client("dynamodb", region_name=region)
+
+    # TODO: Project is small and scanning is ok for a small table
+    # Use query once multiple users are added to the schema
+    response = dynamodb.scan(TableName=table)
+
+    tasks: list[spec.Task] = []
+    for item in response["Items"]:
+        tasks.append(spec.Task(**deserialize_item(item)))
+
+    return tasks

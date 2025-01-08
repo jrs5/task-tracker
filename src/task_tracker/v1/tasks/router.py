@@ -17,9 +17,13 @@ router = LoggedRouter()
     response_model=list[spec.Task],
     summary="Retrieve a list of tasks. Optionally, filter by completion status",
 )
-def get_all_tasks(completed: Annotated[str | None, Query()] = None) -> list[spec.Task]:
-    # TODO: Get tasks from DB
-    return []
+def get_all_tasks(completed: Annotated[bool | None, Query()] = None) -> list[spec.Task]:
+    config = get_config()
+    tasks = db.get_tasks(config.db_table, config.aws_region)
+    if completed is None:
+        return tasks
+
+    return [task for task in tasks if task.completed == completed]
 
 
 @router.post(
