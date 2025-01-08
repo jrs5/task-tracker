@@ -1,9 +1,14 @@
+from collections.abc import Generator
 from dataclasses import dataclass
 
+import boto3
 import pytest
 from fastapi.testclient import TestClient
+from moto import mock_aws
+from mypy_boto3_dynamodb import Client as DynamoDBClient
 
 from main import app
+from task_tracker.config import get_config
 
 
 @dataclass
@@ -22,3 +27,17 @@ def lambda_context() -> LambdaContext:
 @pytest.fixture
 def api_client() -> TestClient:
     return TestClient(app)
+
+
+@pytest.fixture
+def dynamo_client() -> Generator[DynamoDBClient, None, None]:
+    config = get_config()
+    with mock_aws():
+        client = boto3.client("dynamodb", region_name=config.aws_region)
+        client.create_table(
+            TableName=config.db_table,
+            KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
+            AttributeDefinitions=[{"AttributeName": "id", "AttributeType": "S"}],
+            BillingMode="PAY_PER_REQUEST",
+        )
+        yield client

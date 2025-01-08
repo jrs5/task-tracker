@@ -20,6 +20,8 @@ class LogLevel(StrEnum):
 class ServiceSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
+    aws_region: str
+    db_table: str
     environment: str
     log_level: LogLevel
 
