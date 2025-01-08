@@ -16,6 +16,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "3.13.1"
 aws-lambda-powertools = "3.4.0"
+boto3 = "1.35.94"
 httpx = "0.28.1"
 fastapi = "0.115.6"
 mangum = "0.19.0"
@@ -26,10 +27,12 @@ typing-extensions = "4.12.2"
 
 
 [tool.poetry.group.dev.dependencies]
+boto3-stubs = {extras = ["essential"], version = "1.35.94"}
 coverage = "7.6.10"
 aws-cdk-lib = "2.174.0"
 constructs = "^10.0.0"
 datamodel-code-generator = "0.26.4"
+moto = "5.0.26"
 mypy = "1.14.1"
 pytest = "8.3.4"
 poetry-plugin-bundle = "1.5.0"
@@ -87,7 +90,12 @@ warn_untyped_fields = true
 [tool.pyright]
 reportArgumentType = false
 reportCallIssue = false
+reportTypedDictNotRequiredAccess = false
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 env_files = [".env.test"]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning"
+]
