@@ -10,14 +10,14 @@ def test_get_all_tasks_empty_table(api_client: TestClient, dynamo_client: Client
     result = api_client.get("/v1/tasks")
 
     assert result.status_code == 200
-    assert result.json() == []
+    assert result.json() == {"data": []}
 
 
 def test_get_all_tasks_single_item(api_client: TestClient, dynamo_client: Client) -> None:
     task_instance = store_random_task_in_db(dynamo_client)
     result = api_client.get("/v1/tasks")
 
-    task_result = spec.Task(**result.json()[0])
+    task_result = spec.Task(**result.json()["data"][0])
 
     assert result.status_code == 200
     assert task_instance.id == task_result.id
@@ -33,7 +33,7 @@ def test_get_all_tasks_multiple_items(api_client: TestClient, dynamo_client: Cli
 
     result = api_client.get("/v1/tasks")
 
-    task_results = [spec.Task(**task) for task in result.json()]
+    task_results = [spec.Task(**task) for task in result.json()["data"]]
 
     assert result.status_code == 200
     assert len(task_results) == total_tasks
@@ -50,7 +50,7 @@ def test_get_completed_tasks(api_client: TestClient, dynamo_client: Client, comp
 
     result = api_client.get(f"/v1/tasks?completed={completed}")
 
-    task_results = [spec.Task(**task) for task in result.json()]
+    task_results = [spec.Task(**task) for task in result.json()["data"]]
 
     assert result.status_code == 200
     assert len(task_results) == total_tasks
