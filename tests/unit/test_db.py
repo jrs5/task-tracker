@@ -6,6 +6,7 @@ from mypy_boto3_dynamodb import Client
 from task_tracker import db
 from task_tracker.config import get_config
 from task_tracker.contract import spec
+from tests.mocks.tasks import store_random_task_in_db
 
 
 @pytest.fixture
@@ -55,3 +56,25 @@ def test_store_task(dynamo_client: Client) -> None:
     item = db.deserialize_item(response["Item"])
     assert item["title"] == item["description"] == "test"
     assert item["priority"] == "low"
+
+
+def test_get_task_by_id(dynamo_client: Client) -> None:
+    config = get_config()
+    task_instance = store_random_task_in_db(dynamo_client)
+
+    task_result = db.get_task_by_id(task_instance.id, config.db_table, config.aws_region)
+
+    assert task_result is not None
+    assert task_instance.id == task_result.id
+    assert task_instance.title == task_result.title
+    assert task_instance.description == task_result.description
+    assert task_instance.due_date == task_result.due_date
+
+
+def test_get_task_by_id_not_found(dynamo_client: Client) -> None:
+    config = get_config()
+    store_random_task_in_db(dynamo_client)
+
+    task_result = db.get_task_by_id("id_not_found", config.db_table, config.aws_region)
+
+    assert task_result is None

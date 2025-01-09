@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Annotated, Any
 from uuid import uuid4
 
-from fastapi import Body, Query, Request, Response
+from fastapi import Body, HTTPException, Path, Query, Request, Response
 
 from task_tracker import db
 from task_tracker.config import get_config
@@ -46,3 +46,20 @@ def create_task(
     db.store_task(new_task, config.db_table, config.aws_region)
 
     return new_task
+
+
+@router.get(
+    "/{id}",
+    response_model=spec.Task,
+    summary="Retrieve details of a specific task by its unique ID.",
+)
+def get_task_by_id(
+    id: Annotated[str, Path],
+) -> spec.Task:
+    config = get_config()
+
+    task = db.get_task_by_id(id, config.db_table, config.aws_region)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return task

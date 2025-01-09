@@ -63,3 +63,29 @@ def get_tasks(table: str, region: str) -> list[spec.Task]:
         tasks.append(spec.Task(**deserialize_item(item)))
 
     return tasks
+
+
+def get_task_by_id(id: str, table: str, region: str) -> spec.Task | None:
+    """Get a task by id from DynamoDB
+
+    Args:
+        id (str): unique id
+        table (str): DynamoDB table name
+        region (str): AWS Region
+
+    Returns:
+        spec.Task if id is found, otherwise None
+    """
+    dynamodb = boto3.client("dynamodb", region_name=region)
+    response = dynamodb.query(
+        TableName=table,
+        KeyConditionExpression="id = :id_value",
+        ExpressionAttributeValues={
+            ":id_value": {"S": id},
+        },
+    )
+
+    if response["Count"] == 0:
+        return None
+
+    return spec.Task(**deserialize_item(response["Items"][0]))
