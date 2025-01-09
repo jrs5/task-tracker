@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Personal Task Tracker API
   description: A simple API to manage personal tasks or to-do lists.
-  version: 1.0.0
+  version: 1.1.0
   contact:
     name: jrs5
 servers:
@@ -27,9 +27,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Task"
+                $ref: "#/components/schemas/GetTasks"
         "500":
           description: Internal server error
 
@@ -159,6 +157,16 @@ components:
             - medium
             - high
           description: The priority level of the task
+
+    GetTasks:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
 
     TaskCreate:
       type: object
