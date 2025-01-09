@@ -81,5 +81,32 @@ class TaskTrackerStack(Stack):
         )
 
         # Proxy resource with a ANY method for FastAPI
-        hello_resource = api.root.add_resource("{proxy+}")
-        hello_resource.add_method("ANY")
+        api_resource = api.root.add_resource("{proxy+}")
+        api_resource.add_method("ANY", api_key_required=True)
+
+        # Create an API Key
+        api_key = apigateway.ApiKey(
+            self,
+            id="TaskTrackerApiKey",
+            api_key_name="TaskTrackerApiKey",
+            description="TaskTracker API Key for accessing the Lambda service",
+            enabled=True,
+        )
+
+        # Create a Usage Plan for the API Key
+        plan = api.add_usage_plan(
+            "TaskTrackerUsagePlan",
+            name="TaskTrackerUsagePlan",
+            throttle=apigateway.ThrottleSettings(
+                rate_limit=10,
+                burst_limit=20,
+            ),
+            quota=apigateway.QuotaSettings(
+                limit=1000,
+                period=apigateway.Period.MONTH,
+            ),
+        )
+        plan.add_api_key(api_key)
+
+        # Link the usage plan to the API Gateway stage
+        plan.add_api_stage(stage=api.deployment_stage)

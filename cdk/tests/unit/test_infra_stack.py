@@ -51,10 +51,33 @@ def test_lambda_api_created() -> None:
     template.has_resource_properties(
         "AWS::ApiGateway::Method",
         {
+            "ApiKeyRequired": True,
             "HttpMethod": "ANY",
             "Integration": {
                 "IntegrationHttpMethod": "POST",
                 "Type": "AWS_PROXY",
             },
         },
+    )
+
+    template.has_resource_properties(
+        "AWS::ApiGateway::ApiKey",
+        {
+            "Enabled": True,
+            "Name": "TaskTrackerApiKey",
+        },
+    )
+
+    template.has_resource_properties(
+        "AWS::ApiGateway::UsagePlan",
+        {
+            "UsagePlanName": "TaskTrackerUsagePlan",
+            "Quota": {"Limit": 1000, "Period": "MONTH"},
+            "Throttle": {"BurstLimit": 20, "RateLimit": 10},
+        },
+    )
+
+    template.has_resource_properties(
+        "AWS::ApiGateway::UsagePlanKey",
+        {"KeyType": "API_KEY"},
     )
