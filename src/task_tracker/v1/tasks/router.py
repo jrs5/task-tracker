@@ -91,3 +91,20 @@ def update_task_by_id(
     db.store_task(updated_task, config.db_table, config.aws_region)
 
     return updated_task
+
+
+@router.delete(
+    "/{id}",
+    status_code=HTTPStatus.NO_CONTENT,
+    summary="Delete a task by its unique ID.",
+)
+def delete_task_by_id(
+    id: Annotated[str, Path],
+) -> None:
+    config = get_config()
+
+    task = db.get_task_by_id(id, config.db_table, config.aws_region)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    db.delete_task_by_id(id, config.db_table, config.aws_region)

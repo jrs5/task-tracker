@@ -89,3 +89,15 @@ def get_task_by_id(id: str, table: str, region: str) -> spec.Task | None:
         return None
 
     return spec.Task(**deserialize_item(response["Items"][0]))
+
+
+def delete_task_by_id(id: str, table: str, region: str) -> None:
+    """_summary_
+
+    Args:
+        id (str): unique id
+        table (str): DynamoDB table name
+        region (str): AWS Region
+    """
+    dynamodb = boto3.client("dynamodb", region_name=region)
+    dynamodb.delete_item(TableName=table, Key={"id": {"S": id}})

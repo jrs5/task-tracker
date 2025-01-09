@@ -78,3 +78,18 @@ def test_get_task_by_id_not_found(dynamo_client: Client) -> None:
     task_result = db.get_task_by_id("id_not_found", config.db_table, config.aws_region)
 
     assert task_result is None
+
+
+def test_delete_task_by_id(dynamo_client: Client) -> None:
+    config = get_config()
+    task_instance = store_random_task_in_db(dynamo_client)
+
+    # assert the item exists
+    response = dynamo_client.get_item(TableName=config.db_table, Key={"id": {"S": task_instance.id}})
+    assert response["Item"] is not None
+
+    db.delete_task_by_id(task_instance.id, config.db_table, config.aws_region)
+
+    # assert the item has been deleted
+    response = dynamo_client.get_item(TableName=config.db_table, Key={"id": {"S": task_instance.id}})
+    assert response.get("Item") is None
