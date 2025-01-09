@@ -38,3 +38,19 @@ make run
 ```
 
 - Once the server is running, open your browser and enter `localhost:8000/docs` to check OpenAPI spec
+
+## Deployment
+
+The Infrastructure is created as IaC using AWS CDK. All the infrastructure related code is stored inside `cdk/` folder.
+
+- Assume a role with enough permissions to create resources in the target account and region
+- Make sure the AWS account is bootstrapped with AWS CDK (one-time step) using the CDK CLI
+- Use the `deploy` command in the `Makefile`. This will package the app into a zip file and then deploy automatically to the target AWS account
+
+```bash
+make deploy
+```
+
+## Invoke the API
+
+- Make sure to use the `x-api-key` header with the API key deployed and attached to the correct Usage Plan.
