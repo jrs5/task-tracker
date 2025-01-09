@@ -88,3 +88,7 @@ package: ensure-poetry
 	cp -rf src/* dist/
 	cd dist && zip -r package.zip .
 	mv dist/package.zip cdk/package.zip
+
+.PHONY: deploy
+deploy: package
+	cd cdk && cdk deploy
