@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from aws_cdk import RemovalPolicy, Stack
+from aws_cdk import Duration, RemovalPolicy, Stack
 from aws_cdk import aws_apigateway as apigateway
 from aws_cdk import aws_dynamodb as dynamodb
 from aws_cdk import aws_iam as iam
@@ -61,7 +61,9 @@ class TaskTrackerStack(Stack):
             code=lambda_.Code.from_asset(str(asset)),
             function_name="TaskTrackerAPI",
             handler="main.handler",
+            memory_size=256,
             role=lambda_role,
+            timeout=Duration.seconds(10),
             environment={
                 "aws_region": os.environ.get("AWS_REGION", "ap-southeast-2"),
                 "db_table": table.table_name,

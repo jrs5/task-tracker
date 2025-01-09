@@ -40,7 +40,9 @@ def test_lambda_api_created() -> None:
             "Environment": {"Variables": {"aws_region": "ap-southeast-2", "db_table": {}}},
             "Handler": "main.handler",
             "FunctionName": "TaskTrackerAPI",
+            "MemorySize": 256,
             "Runtime": "python3.13",
+            "Timeout": 10,
         },
     )
 
