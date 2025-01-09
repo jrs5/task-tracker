@@ -63,3 +63,31 @@ def get_task_by_id(
         raise HTTPException(status_code=404, detail="Task not found")
 
     return task
+
+
+@router.put(
+    "/{id}",
+    response_model=spec.Task,
+    summary="Update an existing task",
+)
+def update_task_by_id(
+    id: Annotated[str, Path],
+    body: Annotated[spec.TaskUpdate, Body],
+) -> spec.Task:
+    config = get_config()
+
+    task = db.get_task_by_id(id, config.db_table, config.aws_region)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    updated_task = spec.Task(
+        id=task.id,
+        title=body.title if body.title else task.title,
+        description=body.description if body.description else task.description,
+        due_date=body.due_date if body.due_date else task.due_date,
+        completed=body.completed if body.completed else task.completed,
+        priority=body.priority if body.priority else task.priority,
+    )
+    db.store_task(updated_task, config.db_table, config.aws_region)
+
+    return updated_task
