@@ -22,11 +22,41 @@ This will:
 - Install all dependencies using Poetry
 - Configure all the necessary tools to begin development
 
+## Local development
+
+`Makefile` has a bunch of commands to apply code quality checks more easily
+
 `ruff` is used for linting and formatting
+
+```bash
+make format
+```
 
 `mypy` is used for type checking
 
+```bash
+make check
+```
+
 `pytest` is used for unit tests
+
+```bash
+make test-app
+```
+
+All commands have been wrapped into a single command that formats, lint checks, type checks and tests the app.
+
+```bash
+make all-dev
+```
+
+Infrastructure is developed using AWS CDK. Unit tests for infra are in a separate folder and are run with a separate make command
+
+```bash
+make all-dev-plus-cdk
+```
+
+`pre-commit` is used to guarantee that all commits pass format, lint and type checks.
 
 ## Local Testing
 
@@ -38,6 +68,10 @@ make run
 ```
 
 - Once the server is running, open your browser and enter `localhost:8000/docs` to check OpenAPI spec
+
+## CI
+
+Once a feature has been tested locally, the feature branch can be pushed to GitHub. Then, a Pull Request can be raised to merge the feature to `main` branch. This will trigger an automated GitHub action workflow to run Python checks and unit tests for both app and infrastructure. There is a protection rule to merge to `main` only after the GitHub action job is successful
 
 ## Deployment
 
